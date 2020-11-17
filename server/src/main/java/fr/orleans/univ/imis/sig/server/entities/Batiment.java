@@ -14,5 +14,6 @@ public class Batiment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     String nom;
+    //coordonées géometriques = srid en 4326 (log/lat)
 
 }
