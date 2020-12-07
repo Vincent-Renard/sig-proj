@@ -1,4 +1,4 @@
-package fr.orleans.univ.imis.sig.server.entities;
+package fr.orleans.univ.imis.sig.server.persistance.entities;
 
 /**
  * @autor Vincent

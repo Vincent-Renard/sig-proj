@@ -1,10 +1,8 @@
 package fr.orleans.univ.imis.sig.server.api.dtos.in;
 
-import fr.orleans.univ.imis.sig.server.entities.TypeSalle;
+import fr.orleans.univ.imis.sig.server.persistance.entities.TypeSalle;
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 /**
