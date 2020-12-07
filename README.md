@@ -1,18 +1,30 @@
-# sig-proj
+# Projet SIG
 
 ## Fil    
 
-[  ] Avoir un server - postgres qui marche  
-[  ] Concevoir la base (plan batiment + qr codes, ...)  
-[  ] Plan -> geoserver (couche) -> afficher dans openlayers  
-[  ] Rajouter les autres couches.  
-[  ] Trouver une solution pour scan et étude des QR codes (web service)
+[X] Avoir un server - postgres qui marche  
 
+[X] Concevoir la base (plan batiment -portes et salles-  + styles)  
 
+[X] Geoserver (couche) -> afficher dans openlayers avec PostGres en direct
+
+[  ] Mettre en place une app android avec Webview
+
+[  ] Mettre en place un web Service (API)
+
+[  ] Trouver une solution pour scan et étude des QR codes
+
+---
 ## Organisation
 
-Table "salle" = salle ,SRID (coords géographiques), infos salle , polygon
-Table "portes" = point 
+Table "salle" = salle ,SRID (coords géographiques), infos salle (polygon)
+Table "porte" = (line)
 
-le but est de relier les points pour passer d'une porte à une autre.
-  
+Le but est de relier les points pour passer d'une porte à une autre.
+
+---
+### Membres :
+- Guidez Romain
+- Sarget Alexis
+- Renard Vincent
+- Derieux Arnault
