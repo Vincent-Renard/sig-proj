@@ -16,6 +16,8 @@ public class Salle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long numero;
     String nom;
+    TypeSalle type;
+
 
 
 }
