@@ -2,17 +2,17 @@
 
 ## Fil    
 
-[X] Avoir un server - postgres qui marche  
+- [X] Avoir un server - postgres qui marche  
 
-[X] Concevoir la base (plan batiment -portes et salles-  + styles)  
+- [X] Concevoir la base (plan batiment -portes et salles-  + styles)  
 
-[X] Geoserver (couche) -> afficher dans openlayers avec PostGres en direct
+- [X] Geoserver (couche) -> afficher dans openlayers avec PostGres en direct
 
-[  ] Mettre en place une app android avec Webview
+- [ ] Mettre en place une app android avec Webview
 
-[  ] Mettre en place un web Service (API)
+- [ ] Mettre en place un web Service (API)
 
-[  ] Trouver une solution pour scan et étude des QR codes
+- [ ] Trouver une solution pour scan et étude des QR codes
 
 ---
 ## Organisation
