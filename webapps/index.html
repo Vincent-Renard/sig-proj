@@ -11,6 +11,7 @@
     <meta name="author" content="Université">
     <title>Qr Code Adventure</title>
     <link rel="stylesheet" href="ol.css" />
+    <script src="jquery.js"></script>
     <style>
     #map {
         width: 500px;
@@ -19,11 +20,12 @@
     </style>
 </head>
 <body>
-    <h1>QR Code Adventure !</h1>
     <div id="wrapper">
         <div id="map"></div>
     </div>
     <input type="button" onclick="switchEtage();" value="Switch me">
+    <input type="button" onclick="AddPinRandom();" value="Add Pin On RDC">
+    <input type="button" onclick="RemoveAll();" value="Remove All">
     <script src="ol.js"></script>
     <script src="main.js"></script>
 </body>
