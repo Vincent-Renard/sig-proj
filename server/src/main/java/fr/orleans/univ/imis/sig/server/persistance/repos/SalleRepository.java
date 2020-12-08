@@ -10,5 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface SalleRepository extends JpaRepository<Long, Salle> {
+public interface SalleRepository extends JpaRepository<Salle, Long> {
+
 }

@@ -1,23 +1,31 @@
 package fr.orleans.univ.imis.sig.server.persistance.entities;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @autor Vincent
  * @date 13/11/2020
  */
 @Entity
+@Getter
+@Setter
 public class Batiment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String nom;
     //coordonées géometriques = srid en 4326 (log/lat)
 
     @OneToMany(mappedBy = "batiment")
-    Set<Salle> salles = new HashSet<>();
+    List<Salle> salles = new ArrayList<>();
 
+
+    int etages;
 
     @Override
     public String toString() {

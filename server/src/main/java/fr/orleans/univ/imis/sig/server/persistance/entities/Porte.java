@@ -3,6 +3,7 @@ package fr.orleans.univ.imis.sig.server.persistance.entities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -22,8 +23,10 @@ public class Porte {
     @GeneratedValue(strategy = GenerationType.TABLE)
     Long idPorte;// on ne mettra pas id = (salleIn.id + salleOut.id) car pour la porte principale (salleIn = Null)
 
+    @Setter
     @ManyToOne
     Salle salleIn;
+    @Setter
     @ManyToOne
     Salle salleOut;
 

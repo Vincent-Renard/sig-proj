@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
  * @date 13/11/2020
  */
 @Repository
-public interface BatimentRepository extends JpaRepository<String, Batiment> {
-
+public interface BatimentRepository extends JpaRepository<Batiment, String> {
 
 }

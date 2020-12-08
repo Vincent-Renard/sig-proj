@@ -1,5 +1,8 @@
 package fr.orleans.univ.imis.sig.server.persistance.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -11,6 +14,8 @@ import java.util.Set;
  */
 
 @Entity
+@Setter
+@Getter
 public class Salle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +34,7 @@ public class Salle {
 
     @OneToMany
     Set<Porte> portes = new HashSet<>();
+
 
     @Override
     public String toString() {

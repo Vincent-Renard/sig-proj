@@ -5,16 +5,20 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Collection;
+
 /**
  * @autor Vincent
  * @date 23/11/2020
  */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class Room {
+public class UserDefinitedRoom {
 
-    long idBatiment;
+    String nameBatiment;
+    int floor;
     TypeSalle type;
-    String nom;
+    String name;
+    Collection<Long> connectedRooms;
 
 }
