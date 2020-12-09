@@ -24,4 +24,5 @@ public interface Facade {
 
     List<Salle> getSallesOfBat(String nomBat, TypeSalle ts) throws NotSuchBatimentException;
 
+    Batiment getBatiment(String nomBat) throws NotSuchBatimentException;
 }
