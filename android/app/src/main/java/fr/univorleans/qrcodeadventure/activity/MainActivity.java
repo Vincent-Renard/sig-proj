@@ -51,12 +51,18 @@ public class MainActivity extends PermissionsInterface {
 
             if (resultCode == RESULT_OK) {
                 String contents = data.getStringExtra("SCAN_RESULT");
-                Toast.makeText(context, contents, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, MapNavigationActivity.class);
+                i.putExtra("localisation", this.parseLocalisation(contents));
+                startActivity(i);
             }
             if(resultCode == RESULT_CANCELED){
                 //handle cancel
                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private int parseLocalisation(String entry){
+        return Integer.parseInt(entry.split(":")[2]);
     }
 }
