@@ -128,4 +128,11 @@ public class FacadeImpl implements Facade {
 
         return s;
     }
+
+    @Override
+    public Batiment getBatiment(String nomBat) throws NotSuchBatimentException {
+        var optBat = bats.findById(nomBat);
+        return optBat.orElseThrow(NotSuchBatimentException::new);
+
+    }
 }
