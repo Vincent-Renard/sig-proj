@@ -1,38 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="mobile-friendly" content="true"/>
-    <meta name="mobile-usability" content="100"/>
-    <meta name="HandheldFriendly" content="true"/>
-    <meta name="MobileOptimized" content="320"/>
+    <meta name="mobile-friendly" content="true" />
+    <meta name="mobile-usability" content="100" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="MobileOptimized" content="320" />
     <meta name="author" content="Université">
     <title>Qr Code Adventure</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <link rel="stylesheet" href="ol.css" />
     <script src="jquery.js"></script>
     <style>
-    #map {
-        width: 500px;
-        height: 500px;
-    }
+        body {
+            width: 95%;
+        }
+        
+        #wrapper {
+            width: 100%;
+        }
+        
+        #map {
+            width: 100%;
+        }
+        
+        h1 {
+            font-variant: small-caps;
+        }
     </style>
 </head>
+
 <body>
+    <hr>
+    <h1 class="text-center smallcaps">QR Code Adventure</h1>
+    <hr>
     <div id="wrapper">
         <div id="map"></div>
     </div>
-    <input type="button" onclick="switchEtage();" value="Switch me">
-    <input type="button" onclick="AddPinRandom();" value="Add Pin On RDC">
-    <input type="button" onclick="RemoveAll();" value="Remove All">
     <hr>
-    <select name="start" id="startNavigation">
-    </select>
-    <select name="end" id="endNavigation">
-    </select>
-    <input type="button" onclick="Navigate();" value="Navigate">
+    <div class="container">
+        <div>
+            <div class="d-flex justify-content-center">
+                <input class="btn btn-info" type="button" onclick="switchEtage();" value="Changer Etage">
+            </div>
+            <hr>
+            <div class="d-flex justify-content-center">
+                <div class="input-group md-1">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect02">Choississez votre destination</label>
+                    </div>
+                    <select class="custom-select" name="end" id="endNavigation">
+
+                    </select>
+                </div>
+                <input class="btn btn-success" type="button" onclick="Navigate();" value="Naviguer">
+            </div>
+        </div>
+    </div>
     <script src="ol.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>

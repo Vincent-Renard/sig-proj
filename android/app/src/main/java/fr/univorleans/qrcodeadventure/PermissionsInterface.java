@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 public class PermissionsInterface extends AppCompatActivity {
 
     /* | Variables pour les persmissions */
-    private static final int CAMERA_PERMISSION_CODE = 101;
     private static final int INTERNET_PERMISSION_CODE = 102;
     private static final int ACCESS_NETWORK_STATE_CODE = 103;
 
@@ -33,9 +32,6 @@ public class PermissionsInterface extends AppCompatActivity {
             int requestCode;
 
             switch (permission) {
-                case (Manifest.permission.CAMERA):
-                    requestCode = CAMERA_PERMISSION_CODE;
-                    break;
                 case (Manifest.permission.ACCESS_NETWORK_STATE):
                     requestCode = ACCESS_NETWORK_STATE_CODE;
                     break;
@@ -76,9 +72,6 @@ public class PermissionsInterface extends AppCompatActivity {
         switch (s){
             case "internet":
                 permission_real = Manifest.permission.INTERNET;
-                break;
-            case "camera":
-                permission_real = Manifest.permission.CAMERA;
                 break;
             case "network":
                 permission_real = Manifest.permission.ACCESS_NETWORK_STATE;
