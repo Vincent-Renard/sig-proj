@@ -54,7 +54,7 @@ public class FacadeImpl implements Facade {
 
         s.setEtage(userDefinitedRoom.getFloor());
 
-        s.setNom(userDefinitedRoom.getName());
+        s.setFonction(userDefinitedRoom.getName());
         s.setType(userDefinitedRoom.getType());
 
 
@@ -66,8 +66,8 @@ public class FacadeImpl implements Facade {
 
             Salle r = salles.getOne(idr);
 
-            p.setSalleIn(r);
-            p.setSalleOut(s);
+            p.setSalle1(r);
+            p.setSalle2(s);
 
             s.getPortes().add(p);
             r.getPortes().add(p);
@@ -90,7 +90,7 @@ public class FacadeImpl implements Facade {
             s.setType(userModifyRoom.getType());
 
         if (userModifyRoom.getName() != null)
-            s.setNom(userModifyRoom.getName());
+            s.setFonction(userModifyRoom.getName());
 
 
         s = salles.save(s);

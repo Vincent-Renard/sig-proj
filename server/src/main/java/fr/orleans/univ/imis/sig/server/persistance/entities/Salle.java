@@ -19,13 +19,14 @@ import java.util.Set;
 public class Salle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long numero;
 
     @ManyToOne
     Batiment batiment;
 
 
-    String nom;
+    String fonction;
 
     @Enumerated(value = EnumType.STRING)
     TypeSalle type;
@@ -40,7 +41,7 @@ public class Salle {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Salle{");
         sb.append("numero=").append(numero);
-        sb.append(", nom='").append(nom).append('\'');
+        sb.append(", nom='").append(fonction).append('\'');
         sb.append(", type=").append(type);
         sb.append(", etage=").append(etage);
         sb.append(", portes= [");

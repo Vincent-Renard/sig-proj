@@ -23,12 +23,15 @@ public class Porte {
     @GeneratedValue(strategy = GenerationType.TABLE)
     Long idPorte;// on ne mettra pas id = (salleIn.id + salleOut.id) car pour la porte principale (salleIn = Null)
 
+    int numero;
+
+
     @Setter
     @ManyToOne
-    Salle salleIn;
+    Salle salle1;
     @Setter
     @ManyToOne
-    Salle salleOut;
+    Salle salle2;
 
     @Override
     public boolean equals(Object o) {
@@ -36,21 +39,21 @@ public class Porte {
         if (!(o instanceof Porte)) return false;
         Porte porte = (Porte) o;
         return Objects.equals(getIdPorte(), porte.getIdPorte()) &&
-                Objects.equals(getSalleIn(), porte.getSalleIn()) &&
-                Objects.equals(getSalleOut(), porte.getSalleOut());
+                Objects.equals(getSalle1(), porte.getSalle1()) &&
+                Objects.equals(getSalle2(), porte.getSalle2());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getIdPorte(), getSalleIn(), getSalleOut());
+        return Objects.hash(getIdPorte(), getSalle1(), getSalle2());
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Porte{");
         sb.append("idPorte=").append(idPorte);
-        sb.append(", salleIn=").append(salleIn);
-        sb.append(", salleOut=").append(salleOut);
+        sb.append(", salleIn=").append(salle1.getNumero());
+        sb.append(", salleOut=").append(salle2.getNumero());
         sb.append('}');
         return sb.toString();
     }
