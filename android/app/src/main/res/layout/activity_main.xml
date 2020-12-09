@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/QRCodeAdventure"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="36sp"
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="20dp"
+        android:text="@string/title" />
 
-        <TextView
-            android:id="@+id/QRCodeAdventure"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="QRCodeAdventure" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:text="@string/scan_description" />
 
-        <Button
-            android:id="@+id/buttonScanner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="searchQRBar"
-            android:text="Scan QRCODE" />
-
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/buttonScanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="searchQRBar"
+        android:paddingVertical="16sp"
+        android:paddingHorizontal="30sp"
+        android:textSize="20sp"
+        android:text="@string/scan_button" />
+</LinearLayout>
