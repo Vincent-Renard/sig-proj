@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 public class UserModifiedRoom {
     TypeSalle type;
-    String name;
+    String fonction;
 
 }

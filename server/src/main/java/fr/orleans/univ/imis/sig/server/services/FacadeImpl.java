@@ -89,8 +89,8 @@ public class FacadeImpl implements Facade {
         if (userModifyRoom.getType() != null)
             s.setType(userModifyRoom.getType());
 
-        if (userModifyRoom.getName() != null)
-            s.setFonction(userModifyRoom.getName());
+        if (userModifyRoom.getFonction() != null)
+            s.setFonction(userModifyRoom.getFonction());
 
 
         s = salles.save(s);
