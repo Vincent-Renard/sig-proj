@@ -81,30 +81,40 @@ var etage_courant;
 // Fonction de switch d'affichage entre les étages
 function switchEtage() {
     if (etage_courant === 'rdc') {
-        map.getLayers().getArray()[1].setVisible(false);
-        map.getLayers().getArray()[2].setVisible(true);
-        map.getLayers().getArray()[3].setVisible(false);
-        map.getLayers().getArray()[4].setVisible(true);
-
-        etage_courant = 'etage';
+        displayEtage();
     } else {
-        map.getLayers().getArray()[1].setVisible(true);
-        map.getLayers().getArray()[2].setVisible(false);
-        map.getLayers().getArray()[3].setVisible(true);
-        map.getLayers().getArray()[4].setVisible(false);
-
-        etage_courant = 'rdc';
+        displayRDC();
     }
 }
 
+function displayRDC() {
+    map.getLayers().getArray()[1].setVisible(true);
+    map.getLayers().getArray()[2].setVisible(false);
+    map.getLayers().getArray()[3].setVisible(true);
+    map.getLayers().getArray()[4].setVisible(false);
+
+    etage_courant = 'rdc';
+}
+
+function displayEtage() {
+    map.getLayers().getArray()[1].setVisible(false);
+    map.getLayers().getArray()[2].setVisible(true);
+    map.getLayers().getArray()[3].setVisible(false);
+    map.getLayers().getArray()[4].setVisible(true);
+
+    etage_courant = 'etage';
+}
+
+
 // Fonction qui sert lors de l'initialisation/chargement de page
-function initialisation(etage) {
+function initialisation() {
     // No vector by default
     map.getLayers().getArray()[3].setVisible(false);
     map.getLayers().getArray()[4].setVisible(false);
-    //Gestion etage
-    etage_courant = etage;
-    switchEtage();
+    map.getLayers().getArray()[1].setVisible(false);
+    map.getLayers().getArray()[2].setVisible(false);
+
+    centrer(porteStartLocalisation);
 }
 
 // Definitions of features collections
@@ -158,7 +168,7 @@ var populate_portes_etage = $.ajax({
         console.log("An error occured when fetching features : " + erreur + ", " + statut + ". " + resultat);
     }
 });
-
+/*
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -174,15 +184,25 @@ function AddPinRandom() {
         collection_features_portes_rdc[index].getGeometry().getCoordinates()[0][1][1]
     );
     addPinOnMap(x_local, y_local);
-}
+}*/
 
 function getMoyenne(x1, x2) {
     return (x1 + x2) / 2;
 }
-
+/*
 function RemoveAll() {
     source_vector_draw_rdc.clear();
+}*/
+/*
+
+function addPinOnMap(x, y) {
+    var featurething = new ol.Feature({
+        geometry: new ol.geom.Point([x, y])
+    });
+    featurething.setStyle(style_pin);
+    source_vector_draw_rdc.addFeature(featurething);
 }
+*/
 
 var style_pin = new ol.style.Style({
     image: new ol.style.Circle({
@@ -197,45 +217,13 @@ var style_pin = new ol.style.Style({
     })
 });
 
-function addPinOnMap(x, y) {
-    var featurething = new ol.Feature({
-        geometry: new ol.geom.Point([x, y])
-    });
-    featurething.setStyle(style_pin);
-    source_vector_draw_rdc.addFeature(featurething);
-}
-
-// population of the two select (start and end)
-$.when(populate_portes_rdc, populate_portes_etage).done(function() {
-    collection_features_portes_rdc.forEach(
-        function(element) {
-            document.getElementById("startNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Rdc - " + element.get("numero") +
-                "</option>";
-            document.getElementById("endNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Rdc - " + element.get("numero") +
-                "</option>";
-        }
-    );
-    collection_features_portes_etage.forEach(
-        function(element) {
-            document.getElementById("startNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Etage - " + element.get("numero") +
-                "</option>";
-            document.getElementById("endNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Etage - " + element.get("numero") +
-                "</option>";
-        }
-    );
-});
-
 // Main function - callable by input
 function Navigate() {
-    var porte_start = document.getElementById("startNavigation").value;
+    source_vector_draw_rdc.clear();
+    source_vector_draw_etage.clear();
+    drawPinStart();
+
+    var porte_start = porteStartLocalisation;
     var porte_end = document.getElementById("endNavigation").value;
 
     var collection_route = Route(porte_start, porte_end);
@@ -315,7 +303,13 @@ function one_step(chemins, salles_visitees) {
 function get_porte(num_porte) {
     return collection_features_portes_rdc
         .concat(collection_features_portes_etage)
-        .find(features_porte => features_porte.get("numero"));
+        .find(features_porte => features_porte.get("numero") === num_porte);
+}
+
+function get_salle(num_salle) {
+    return collection_features_salles_rdc
+        .concat(collection_features_salles_etage)
+        .find(features_salle => parseInt(features_salle.getId().split('.')[1]) === num_salle);
 }
 
 function find_portes(salle) {
@@ -363,7 +357,89 @@ function Drawline(porte1, porte2, etage) {
     }
 }
 
-// Tests
-(function() {
-    initialisation('etage');
-})();
+function addPinOnMapLayered(x, y) {
+    var featurething = new ol.Feature({
+        geometry: new ol.geom.Point([x, y])
+    });
+    featurething.setStyle(style_pin);
+    if (etage_courant == "rdc") {
+        source_vector_draw_rdc.addFeature(featurething);
+    } else {
+        source_vector_draw_etage.addFeature(featurething);
+    }
+}
+
+var x_local_start;
+var y_local_start;
+
+function addPinOnMapStart() {
+    var start_feature = get_porte(porteStartLocalisation);
+    var featurething = new ol.Feature({
+        geometry: new ol.geom.Point([x_local_start, y_local_start])
+    });
+    featurething.setStyle(style_pin);
+    if (start_feature.get("etage") == 0) {
+        source_vector_draw_rdc.addFeature(featurething);
+    } else {
+        source_vector_draw_etage.addFeature(featurething);
+    }
+}
+
+function drawPinStart() {
+    addPinOnMapStart();
+}
+
+function centrer(numero_porte) {
+    var feature_porte = get_porte(numero_porte);
+    x_local_start = getMoyenne(
+        feature_porte.getGeometry().getCoordinates()[0][0][0],
+        feature_porte.getGeometry().getCoordinates()[0][1][0]
+    );
+    y_local_start = getMoyenne(
+        feature_porte.getGeometry().getCoordinates()[0][0][1],
+        feature_porte.getGeometry().getCoordinates()[0][1][1]
+    );
+    map.getView().setCenter([x_local_start, y_local_start]);
+    if (feature_porte.get('etage') === 0) {
+        displayRDC();
+    } else {
+        displayEtage();
+    }
+    addPinOnMapLayered(x_local_start, y_local_start);
+}
+
+var porteStartLocalisation;
+
+// population of the two select (start and end) and logique metier
+$.when(populate_portes_rdc, populate_portes_etage, populate_salles_etage, populate_salles_rdc).done(function() {
+    collection_features_portes_rdc.forEach(
+        function(element) {
+            /*document.getElementById("startNavigation").innerHTML += "<option value = '" +
+                element.get("numero") + "'>" +
+                "Rdc - " + element.get("numero") +
+                "</option>";*/
+            var feature_tampon_salle1 = get_salle(parseInt(element.get("salle1")));
+            var feature_tampon_salle2 = get_salle(parseInt(element.get("salle2")));
+            document.getElementById("endNavigation").innerHTML += "<option value = '" +
+                element.get("numero") + "'>" +
+                "Porte au Rdc - num " + element.get("numero") + " - salles : " + feature_tampon_salle1.get("fonction") + "/" + feature_tampon_salle2.get("fonction")
+            "</option>";
+        }
+    );
+    collection_features_portes_etage.forEach(
+        function(element) {
+            /*document.getElementById("startNavigation").innerHTML += "<option value = '" +
+                element.get("numero") + "'>" +
+                "Etage - " + element.get("numero") +
+                "</option>";*/
+            var feature_tampon_salle1 = get_salle(parseInt(element.get("salle1")));
+            var feature_tampon_salle2 = get_salle(parseInt(element.get("salle2")));
+            document.getElementById("endNavigation").innerHTML += "<option value = '" +
+                element.get("numero") + "'>" +
+                "Porte à l'Etage - num " + element.get("numero") + " - salles : " + feature_tampon_salle1.get("fonction") + "/" + feature_tampon_salle2.get("fonction")
+            "</option>";
+        }
+    );
+    porteStartLocalisation = InterfaceAndroid.getPorte();
+    initialisation();
+});
