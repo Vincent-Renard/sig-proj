@@ -443,3 +443,42 @@ $.when(populate_portes_rdc, populate_portes_etage, populate_salles_etage, popula
     porteStartLocalisation = InterfaceAndroid.getPorte();
     initialisation();
 });
+
+function getSourceVisible() {
+    if (etage_courant == "rdc") {
+        return layer_agregat_rdc;
+    } else {
+        return layer_agregat_etage;
+    }
+}
+
+var liste_categories = ['TD', 'TP', 'BUREAU', 'COULOIR', 'TOILETTES', 'LABO'];
+
+map.on('singleclick', function(evt) {
+    var view = map.getView();
+    var viewResolution = view.getResolution();
+    var source = getSourceVisible().getSource();
+    var url = source.getGetFeatureInfoUrl(
+        evt.coordinate, viewResolution, view.getProjection(), { 'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50 });
+    if (url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            success: function(json, statut) {
+                var element_clicked = json
+                var element_clicked_json = JSON.parse(element_clicked)
+                document.getElementById('identifiantClicked').innerHTML = element_clicked_json.features[0].id
+                document.getElementById('etageClicked').innerHTML = element_clicked_json.features[0].properties.etage
+                let select = document.getElementById('categorieClickedSelect')
+                select.value = element_clicked_json.features[0].properties.categorie
+                document.getElementById('fonctionClickedInput').value = element_clicked_json.features[0].properties.fonction
+                document.getElementById('rowData').hidden = false
+                document.getElementById('rowLoading').hidden = true
+            },
+            error: function(resultat, statut, erreur) {
+                console.log("An error occured when fetching features : " + erreur + ", " + statut + ". " + resultat);
+            }
+        });
+    }
+});
