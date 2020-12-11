@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface Facade {
 
-    Salle updateRoom(long id, UserModifiedRoom userModifyRoom) throws NotSuchRoomException;
+    Salle updateRoom(int id, UserModifiedRoom userModifyRoom) throws NotSuchRoomException;
 
     List<Salle> getAllSalles(Categorie ts);
 

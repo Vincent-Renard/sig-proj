@@ -14,8 +14,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @ToString
 public class Salle {
-    int id, etage;
-    String fonction;
-    Categorie categorie;
+    final int id, etage;
+    final String fonction;
+    final Categorie categorie;
 
 }

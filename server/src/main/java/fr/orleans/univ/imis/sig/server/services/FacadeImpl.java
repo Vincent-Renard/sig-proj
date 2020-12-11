@@ -1,16 +1,20 @@
 package fr.orleans.univ.imis.sig.server.services;
 
-import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
-import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
-import fr.orleans.univ.imis.sig.server.persistance.repos.SallesEtageRepository;
-import fr.orleans.univ.imis.sig.server.persistance.repos.SallesRDCRepository;
-import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
+import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
+import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
+import fr.orleans.univ.imis.sig.server.persistance.entities.SallesEtage;
+import fr.orleans.univ.imis.sig.server.persistance.entities.SallesRDC;
+import fr.orleans.univ.imis.sig.server.persistance.repos.SallesEtageRepository;
+import fr.orleans.univ.imis.sig.server.persistance.repos.SallesRDCRepository;
+import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
 
 /**
  * @autor Vincent
@@ -25,28 +29,56 @@ public class FacadeImpl implements Facade {
 
     @Override
     public Salle updateRoom(int idRoom, UserModifiedRoom userModifyRoom) throws NotSuchRoomException {
-        sallesRDCRepository.findById(idRoom)
-            .ifPresentOrElse(salleRDC -> {
-                salleRDC.setFonction(userModifyRoom.getFonction());
-                salleRDC.setCategorie(userModifyRoom.getType());
-            }, () -> {
-                var salleEtage = sallesEtageRepository.findById(idRoom).orElseThrow(NotSuchRoomException::new);
-                salleEtage.setFonction(userModifyRoom.getFonction());
-                salleEtage.setCategorie(userModifyRoom.getType());
-            });
+        Salle salle;
+
+        var optSalleRDC = sallesRDCRepository.findById(idRoom);
+        if (!optSalleRDC.isEmpty()) {
+            var salleRDC = optSalleRDC.get();
+            salleRDC.setFonction(userModifyRoom.getFonction());
+            salleRDC.setCategorie(userModifyRoom.getCategorie());
+            salle = getSalleFromSalleRDC(salleRDC);
+        }
+        else {
+            var salleEtage = sallesEtageRepository.findById(idRoom).orElseThrow(NotSuchRoomException::new);
+            salleEtage.setFonction(userModifyRoom.getFonction());
+            salleEtage.setCategorie(userModifyRoom.getCategorie());
+            salle = getSalleFromSalleEtage(salleEtage);
+        }
+
+        return salle;
     }
 
 
     @Override
     public List<Salle> getAllSalles(Categorie ts) {
-
-
-        List<Salle> s = salles.findAll();
-        if (ts != null) {
-            s = s.stream().filter(r -> r.getType().equals(ts)).collect(Collectors.toList());
-        }
-
-        return s;
+        return Stream.concat(
+            sallesRDCRepository.findAll()
+                .stream()
+                .filter(salleRDC -> ts == null || ts == salleRDC.getCategorie())
+                .map(FacadeImpl::getSalleFromSalleRDC),
+            sallesEtageRepository.findAll()
+                .stream()
+                .filter(salleEtage -> ts == null || ts == salleEtage.getCategorie())
+                .map(FacadeImpl::getSalleFromSalleEtage)
+        )
+        .collect(Collectors.toList());
     }
 
+    private static Salle getSalleFromSalleRDC(SallesRDC salleRDC) {
+        return new Salle(
+            salleRDC.getId(),
+            salleRDC.getEtage(),
+            salleRDC.getFonction(),
+            salleRDC.getCategorie()
+        );
+    }
+
+    private static Salle getSalleFromSalleEtage(SallesEtage salleEtage) {
+        return new Salle(
+            salleEtage.getId(),
+            salleEtage.getEtage(),
+            salleEtage.getFonction(),
+            salleEtage.getCategorie()
+        );
+    }
 }
