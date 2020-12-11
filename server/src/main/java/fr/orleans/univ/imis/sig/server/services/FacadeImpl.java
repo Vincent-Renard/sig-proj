@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class FacadeImpl implements Facade {
+
     @Autowired
     private SallesRDCRepository sallesRDCRepository;
     @Autowired
@@ -25,6 +26,8 @@ public class FacadeImpl implements Facade {
 
     @Override
     public Salle updateRoom(int idRoom, UserModifiedRoom userModifyRoom) throws NotSuchRoomException {
+
+
         sallesRDCRepository.findById(idRoom)
             .ifPresentOrElse(salleRDC -> {
                 salleRDC.setFonction(userModifyRoom.getFonction());
