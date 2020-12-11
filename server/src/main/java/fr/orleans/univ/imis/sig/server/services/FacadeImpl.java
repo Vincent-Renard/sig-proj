@@ -1,20 +1,13 @@
 package fr.orleans.univ.imis.sig.server.services;
 
-import fr.orleans.univ.imis.sig.server.api.dtos.in.UserDefinitedHouse;
-import fr.orleans.univ.imis.sig.server.api.dtos.in.UserDefinitedRoom;
 import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Batiment;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Porte;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Salle;
-import fr.orleans.univ.imis.sig.server.persistance.entities.TypeSalle;
-import fr.orleans.univ.imis.sig.server.persistance.repos.BatimentRepository;
+import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
+import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
 import fr.orleans.univ.imis.sig.server.persistance.repos.SalleRepository;
-import fr.orleans.univ.imis.sig.server.services.exceptions.*;
+import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,59 +19,9 @@ import java.util.stream.Collectors;
 public class FacadeImpl implements Facade {
 
     @Autowired
-    private BatimentRepository bats;
-
-    @Autowired
     private SalleRepository salles;
 
 
-    @Transactional
-    @Override
-    public Salle addRoom(UserDefinitedRoom userDefinitedRoom) throws NotSuchBatimentException, NotSuchConnectedRoomException, FloorOverFlowException {
-
-
-        if (userDefinitedRoom.getConnectedRooms().stream().anyMatch(id -> !salles.existsById(id)))
-            throw new NotSuchConnectedRoomException();
-
-
-        var optbatiment = bats.findById(userDefinitedRoom.getNameBatiment());
-        if (optbatiment.isEmpty()) {
-            throw new NotSuchBatimentException();
-        }
-
-        Batiment batiment = optbatiment.get();
-
-        Salle s = new Salle();
-        if (userDefinitedRoom.getFloor() > batiment.getEtages())
-            throw new FloorOverFlowException();
-
-        s.setEtage(userDefinitedRoom.getFloor());
-
-        s.setFonction(userDefinitedRoom.getName());
-        s.setType(userDefinitedRoom.getType());
-
-
-        s.setBatiment(batiment);
-
-        List<Porte> portes = new ArrayList<>(userDefinitedRoom.getConnectedRooms().size());
-        for (long idr : userDefinitedRoom.getConnectedRooms()) {
-            Porte p = new Porte();
-
-            Salle r = salles.getOne(idr);
-
-            p.setSalle1(r);
-            p.setSalle2(s);
-
-            s.getPortes().add(p);
-            r.getPortes().add(p);
-
-        }
-
-
-        s = salles.save(s);
-        return s;
-
-    }
 
     @Override
     public Salle updateRoom(long idRoom, UserModifiedRoom userModifyRoom) throws NotSuchRoomException {
@@ -100,28 +43,10 @@ public class FacadeImpl implements Facade {
 
 
     @Override
-    public Batiment addBatiment(UserDefinitedHouse udh) throws SuchBatimentNameExistsException {
+    public List<Salle> getAllSalles(Categorie ts) {
 
-        if (bats.existsById(udh.getName())) {
-            throw new SuchBatimentNameExistsException();
-        }
-        Batiment b = new Batiment();
-        b.setEtages(udh.getFloors());
-        b.setNom(udh.getName());
-        //todo addRooms ?
 
-        b = bats.save(b);
-
-        return b;
-    }
-
-    @Override
-    public List<Salle> getSallesOfBat(String nomBat, TypeSalle ts) throws NotSuchBatimentException {
-
-        var optBat = bats.findById(nomBat);
-
-        Batiment b = optBat.orElseThrow(NotSuchBatimentException::new);
-        List<Salle> s = b.getSalles();
+        List<Salle> s = salles.findAll();
         if (ts != null) {
             s = s.stream().filter(r -> r.getType().equals(ts)).collect(Collectors.toList());
         }
@@ -129,10 +54,4 @@ public class FacadeImpl implements Facade {
         return s;
     }
 
-    @Override
-    public Batiment getBatiment(String nomBat) throws NotSuchBatimentException {
-        var optBat = bats.findById(nomBat);
-        return optBat.orElseThrow(NotSuchBatimentException::new);
-
-    }
 }

@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @date 08/12/2020
  */
 @ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "Error Floor")
-public class FloorOverFlowException extends Throwable {
+public class FloorOverFlowException extends Exception {
 }

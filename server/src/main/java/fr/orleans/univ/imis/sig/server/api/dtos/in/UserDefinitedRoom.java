@@ -1,6 +1,6 @@
 package fr.orleans.univ.imis.sig.server.api.dtos.in;
 
-import fr.orleans.univ.imis.sig.server.persistance.entities.TypeSalle;
+import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +17,7 @@ public class UserDefinitedRoom {
 
     String nameBatiment;
     int floor;
-    TypeSalle type;
+    Categorie type;
     String name;
     Collection<Long> connectedRooms;
 

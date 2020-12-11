@@ -1,12 +1,9 @@
 package fr.orleans.univ.imis.sig.server.services;
 
-import fr.orleans.univ.imis.sig.server.api.dtos.in.UserDefinitedHouse;
-import fr.orleans.univ.imis.sig.server.api.dtos.in.UserDefinitedRoom;
 import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Batiment;
-import fr.orleans.univ.imis.sig.server.persistance.entities.Salle;
-import fr.orleans.univ.imis.sig.server.persistance.entities.TypeSalle;
-import fr.orleans.univ.imis.sig.server.services.exceptions.*;
+import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
+import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
+import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
 
 import java.util.List;
 
@@ -16,13 +13,8 @@ import java.util.List;
  */
 public interface Facade {
 
-    Batiment addBatiment(UserDefinitedHouse udh) throws SuchBatimentNameExistsException;
-
-    Salle addRoom(UserDefinitedRoom udr) throws NotSuchBatimentException, NotSuchConnectedRoomException, FloorOverFlowException;
-
     Salle updateRoom(long id, UserModifiedRoom userModifyRoom) throws NotSuchRoomException;
 
-    List<Salle> getSallesOfBat(String nomBat, TypeSalle ts) throws NotSuchBatimentException;
+    List<Salle> getAllSalles(Categorie ts);
 
-    Batiment getBatiment(String nomBat) throws NotSuchBatimentException;
 }
