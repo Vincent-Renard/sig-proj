@@ -31,6 +31,7 @@ public class Controler {
         return ResponseEntity.ok(base.getAllSalles(typeOfRoom));
     }
 
+    @CrossOrigin(origins = "*")
     @PatchMapping("rooms/{idRoom}")
     public ResponseEntity<Salle> updateRoom(@PathVariable(name = "idRoom") int idroom, @RequestBody UserModifiedRoom userModifiedRoom) throws NotSuchRoomException {
         return ResponseEntity.ok(base.updateRoom(idroom, userModifiedRoom));

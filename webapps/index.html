@@ -96,8 +96,14 @@
                                         <input class="btn btn-success" type="button" onclick="editSalle();" value="Editer">
                                     </td>
                                 </tr>
-                                <tr id="rowLoading">
+                                <tr id="rowInit">
                                     <td colspan="5">Aucune données... Veuillez cliquer sur une salle de la carte.</td>
+                                </tr>
+                                <tr id="rowUpdated" hidden>
+                                    <td colspan="5">La salle a été mise à jour !</td>
+                                </tr>
+                                <tr id="rowLoading" hidden>
+                                    <td colspan="5"><img src="loading.gif" width="100px"></td>
                                 </tr>
                             </tbody>
                         </table>

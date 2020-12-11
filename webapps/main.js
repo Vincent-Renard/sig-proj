@@ -1,4 +1,5 @@
 // Définitions des sources
+
 var source_osm = new ol.source.OSM();
 var source_agregat_rdc = new ol.source.TileWMS({
     url: '../geoserver/batiment-sig/wms',
@@ -8,18 +9,6 @@ var source_agregat_etage = new ol.source.TileWMS({
     url: '../geoserver/batiment-sig/wms',
     params: { LAYERS: 'batiment-sig:batiment-sig-etage', TILED: true, tilesOrigin: 1.93260718901831 + "," + 47.8469484265681 }
 });
-/*var source_salles_rdc = new ol.source.Vector({
-  format: new ol.format.GeoJSON(),
-  url: function () {
-    return "../geoserver/batiment-sig/wfs?request=GetFeature&typename=batiment-sig:salles-rdc&outputFormat=application/json";
-  }
-});
-var source_salles_etage = new ol.source.Vector({
-  format: new ol.format.GeoJSON(),
-  url: function () {
-    return "../geoserver/batiment-sig/wfs?request=GetFeature&typename=batiment-sig:salles-etage&outputFormat=application/json";
-  }
-});*/
 var source_vector_draw_rdc = new ol.source.Vector({});
 var source_vector_draw_etage = new ol.source.Vector({});
 
@@ -36,14 +25,6 @@ var layer_agregat_etage = new ol.layer.Tile({
     name: 'agregat-etage',
     source: source_agregat_etage
 });
-/*var layer_vector_salles_rdc = new ol.layer.Vector({
-  name: 'vector-salles-rdc',
-  source: source_salles_rdc
-});
-var layer_vector_salles_etage = new ol.layer.Vector({
-  name: 'vector-salles-etage',
-  source: source_salles_etage
-});*/
 var layer_vector_draw_rdc = new ol.layer.Vector({
     source: source_vector_draw_rdc
 })
@@ -54,9 +35,6 @@ var layer_vector_draw_etage = new ol.layer.Vector({
 // Définition de la map
 var map = new ol.Map({
     target: 'map',
-    /*layers: [layer_osm,layer_agregat_rdc,
-      layer_agregat_etage,layer_vector_salles_rdc,
-      layer_vector_salles_etage,layer_vector_draw,],*/
     layers: [layer_osm, layer_agregat_rdc,
         layer_agregat_etage, layer_vector_draw_rdc,
         layer_vector_draw_etage
@@ -168,41 +146,10 @@ var populate_portes_etage = $.ajax({
         console.log("An error occured when fetching features : " + erreur + ", " + statut + ". " + resultat);
     }
 });
-/*
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
-function AddPinRandom() {
-    var index = getRandomInt(11);
-    var x_local = getMoyenne(
-        collection_features_portes_rdc[index].getGeometry().getCoordinates()[0][0][0],
-        collection_features_portes_rdc[index].getGeometry().getCoordinates()[0][1][0]
-    );
-    var y_local = getMoyenne(
-        collection_features_portes_rdc[index].getGeometry().getCoordinates()[0][0][1],
-        collection_features_portes_rdc[index].getGeometry().getCoordinates()[0][1][1]
-    );
-    addPinOnMap(x_local, y_local);
-}*/
 
 function getMoyenne(x1, x2) {
     return (x1 + x2) / 2;
 }
-/*
-function RemoveAll() {
-    source_vector_draw_rdc.clear();
-}*/
-/*
-
-function addPinOnMap(x, y) {
-    var featurething = new ol.Feature({
-        geometry: new ol.geom.Point([x, y])
-    });
-    featurething.setStyle(style_pin);
-    source_vector_draw_rdc.addFeature(featurething);
-}
-*/
 
 var style_pin = new ol.style.Style({
     image: new ol.style.Circle({
@@ -223,13 +170,38 @@ function Navigate() {
     source_vector_draw_etage.clear();
     drawPinStart();
 
-    var porte_start = porteStartLocalisation;
+    //var porte_start = porteStartLocalisation;
+    var porte_start = "6";
     var porte_end = document.getElementById("endNavigation").value;
 
     var collection_route = Route(porte_start, porte_end);
     collection_route.forEach(triple => { //start, end, layer
         Drawline(triple[0], triple[1], triple[2]);
     });
+}
+
+function distancePortes(feature_porte1, feature_porte2) {
+    let porte1_x_local = getMoyenne(
+        feature_porte1.getGeometry().getCoordinates()[0][0][0],
+        feature_porte1.getGeometry().getCoordinates()[0][1][0]
+    );
+    let porte1_y_local = getMoyenne(
+        feature_porte1.getGeometry().getCoordinates()[0][0][1],
+        feature_porte1.getGeometry().getCoordinates()[0][1][1]
+    );
+    let porte2_x_local = getMoyenne(
+        feature_porte2.getGeometry().getCoordinates()[0][0][0],
+        feature_porte2.getGeometry().getCoordinates()[0][1][0]
+    );
+    let porte2_y_local = getMoyenne(
+        feature_porte2.getGeometry().getCoordinates()[0][0][1],
+        feature_porte2.getGeometry().getCoordinates()[0][1][1]
+    );
+    //Distance euclidienne
+    return Math.sqrt(
+        Math.pow(porte2_x_local - porte1_x_local, 2) +
+        Math.pow(porte2_y_local - porte1_y_local, 2)
+    );
 }
 
 // return a collection of triple for each etape of the route
@@ -266,15 +238,12 @@ function Route(porte_start, porte_end) {
     // On parcours l'ensemble des possible porte à porte !
     // On stock dans une variable l'ensemble des routes possible
     // On ne passe pas deux fois par la même porte
-    let salles_visitees = new Set();
-    let chemins = [
-        [feature_porte_1]
+    const chemins = [
+        [
+            [feature_porte_1], 0
+        ]
     ];
-    let bon_chemin;
-    while (bon_chemin === undefined) {
-        chemins = one_step(chemins, salles_visitees);
-        bon_chemin = chemins.find(chemin => chemin.includes(feature_porte_2));
-    }
+    const bon_chemin = run(chemins, feature_porte_2);
 
     let res = [];
     for (let i = 0; i < bon_chemin.length - 1; i++) {
@@ -287,17 +256,47 @@ function Route(porte_start, porte_end) {
     return res;
 }
 
-function one_step(chemins, salles_visitees) {
-    return chemins.flatMap(chemin => {
-        const derniere_porte = chemin[chemin.length - 1];
-        return [derniere_porte.get("salle1"), derniere_porte.get("salle2")]
-            .filter(salle => !salles_visitees.has(salle))
-            .map(salle => {
-                salles_visitees.add(salle);
-                return salle;
-            }) // Attention
-            .flatMap(salle => find_portes(salle).map(porte => chemin.concat([porte])))
-    });
+function run(init, porte_recherchee) {
+    let chemins_precedents = init;
+    let end = false;
+
+    while (!end) {
+        const nouveaux_chemins = Array.from(chemins_precedents);
+        end = true;
+        console.log(chemins_precedents);
+        for (const [chemin, distance] of chemins_precedents) {
+            const avant_derniere_porte = chemin[chemin.length - 2];
+            const derniere_porte = chemin[chemin.length - 1];
+            if (derniere_porte === porte_recherchee) {
+                continue;
+            }
+            const salles = [derniere_porte.get("salle1"), derniere_porte.get("salle2")];
+            for (const salle of salles) {
+                if (avant_derniere_porte != null && [avant_derniere_porte.get("salle1"), avant_derniere_porte.get("salle2")].includes(salle)) {
+                    continue;
+                }
+                for (const porte of find_portes(salle)) {
+                    if (chemin.includes(porte)) {
+                        continue;
+                    }
+                    nouveaux_chemins.pop(chemin);
+                    nouveaux_chemins.push([chemin.concat([porte]), distance + distancePortes(derniere_porte, porte)]);
+                    end = false;
+                }
+            }
+        }
+        chemins_precedents = nouveaux_chemins;
+    }
+
+    let maximum = 0;
+    let res;
+    for (const [chemin, distance] of chemins_precedents) {
+        if (distance > maximum) {
+            maximum = distance;
+            res = chemin;
+        }
+    }
+    return res;
 }
 
 function get_porte(num_porte) {
@@ -386,7 +385,7 @@ function addPinOnMapStart() {
 }
 
 function drawPinStart() {
-    addPinOnMapStart();
+    //addPinOnMapStart();
 }
 
 function centrer(numero_porte) {
@@ -414,10 +413,6 @@ var porteStartLocalisation;
 $.when(populate_portes_rdc, populate_portes_etage, populate_salles_etage, populate_salles_rdc).done(function() {
     collection_features_portes_rdc.forEach(
         function(element) {
-            /*document.getElementById("startNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Rdc - " + element.get("numero") +
-                "</option>";*/
             var feature_tampon_salle1 = get_salle(parseInt(element.get("salle1")));
             var feature_tampon_salle2 = get_salle(parseInt(element.get("salle2")));
             document.getElementById("endNavigation").innerHTML += "<option value = '" +
@@ -428,10 +423,6 @@ $.when(populate_portes_rdc, populate_portes_etage, populate_salles_etage, popula
     );
     collection_features_portes_etage.forEach(
         function(element) {
-            /*document.getElementById("startNavigation").innerHTML += "<option value = '" +
-                element.get("numero") + "'>" +
-                "Etage - " + element.get("numero") +
-                "</option>";*/
             var feature_tampon_salle1 = get_salle(parseInt(element.get("salle1")));
             var feature_tampon_salle2 = get_salle(parseInt(element.get("salle2")));
             document.getElementById("endNavigation").innerHTML += "<option value = '" +
@@ -454,6 +445,8 @@ function getSourceVisible() {
 
 var liste_categories = ['TD', 'TP', 'BUREAU', 'COULOIR', 'TOILETTES', 'LABO'];
 
+var element_clicked_json;
+
 map.on('singleclick', function(evt) {
     var view = map.getView();
     var viewResolution = view.getResolution();
@@ -467,18 +460,54 @@ map.on('singleclick', function(evt) {
             dataType: 'text',
             success: function(json, statut) {
                 var element_clicked = json
-                var element_clicked_json = JSON.parse(element_clicked)
+                element_clicked_json = JSON.parse(element_clicked)
                 document.getElementById('identifiantClicked').innerHTML = element_clicked_json.features[0].id
                 document.getElementById('etageClicked').innerHTML = element_clicked_json.features[0].properties.etage
                 let select = document.getElementById('categorieClickedSelect')
                 select.value = element_clicked_json.features[0].properties.categorie
                 document.getElementById('fonctionClickedInput').value = element_clicked_json.features[0].properties.fonction
-                document.getElementById('rowData').hidden = false
+                document.getElementById('rowInit').hidden = true
                 document.getElementById('rowLoading').hidden = true
+                document.getElementById('rowData').hidden = false
             },
             error: function(resultat, statut, erreur) {
                 console.log("An error occured when fetching features : " + erreur + ", " + statut + ". " + resultat);
-            }
+            },
         });
     }
 });
+
+function editSalle() {
+    let id_update = element_clicked_json.features[0].id.split('.')[1];
+    let url_update = "ad-laptop:8081/sig/rooms/" + id_update + '/'
+    let categorie_update = document.getElementById('categorieClickedSelect').value;
+    let fonction_update = document.getElementById('fonctionClickedInput').value;
+    let data_update = {
+        "fonction": fonction_update,
+        "categorie": categorie_update
+    };
+    let request_update = $.ajax({
+        url: "http://" + url_update,
+        type: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify(data_update),
+        processData: false,
+        beforeSend: function() {
+            document.getElementById('rowData').hidden = true
+            document.getElementById('rowLoading').hidden = false
+        },
+        success: function(json, statut) {
+            alert("La salle a été mise à jour !"); // alert not working with android web view !
+            document.getElementById('rowData').hidden = true
+            document.getElementById('rowUpdated').hidden = false
+        },
+        error: function(resultat, statut, erreur) {
+            alert("Error when updating")
+            console.log("An error occured when updating a feature : " + erreur + ", " + statut + ". " + resultat);
+            document.getElementById('rowData').hidden = false
+        },
+        complete: function() {
+            document.getElementById('rowLoading').hidden = true
+        }
+    });
+}
