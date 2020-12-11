@@ -1,12 +1,5 @@
 package fr.orleans.univ.imis.sig.server.services;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
 import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
 import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
@@ -15,6 +8,12 @@ import fr.orleans.univ.imis.sig.server.persistance.entities.SallesRDC;
 import fr.orleans.univ.imis.sig.server.persistance.repos.SallesEtageRepository;
 import fr.orleans.univ.imis.sig.server.persistance.repos.SallesRDCRepository;
 import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @autor Vincent
@@ -33,13 +32,12 @@ public class FacadeImpl implements Facade {
         Salle salle;
 
         var optSalleRDC = sallesRDCRepository.findById(idRoom);
-        if (!optSalleRDC.isEmpty()) {
+        if (optSalleRDC.isPresent()) {
             var salleRDC = optSalleRDC.get();
             salleRDC.setFonction(userModifyRoom.getFonction());
             salleRDC.setCategorie(userModifyRoom.getCategorie());
             salle = getSalleFromSalleRDC(salleRDC);
-        }
-        else {
+        } else {
             var salleEtage = sallesEtageRepository.findById(idRoom).orElseThrow(NotSuchRoomException::new);
             salleEtage.setFonction(userModifyRoom.getFonction());
             salleEtage.setCategorie(userModifyRoom.getCategorie());
