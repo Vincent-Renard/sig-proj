@@ -3,7 +3,8 @@ package fr.orleans.univ.imis.sig.server.services;
 import fr.orleans.univ.imis.sig.server.api.dtos.in.UserModifiedRoom;
 import fr.orleans.univ.imis.sig.server.api.dtos.out.Salle;
 import fr.orleans.univ.imis.sig.server.persistance.entities.Categorie;
-import fr.orleans.univ.imis.sig.server.persistance.repos.SalleRepository;
+import fr.orleans.univ.imis.sig.server.persistance.repos.SallesEtageRepository;
+import fr.orleans.univ.imis.sig.server.persistance.repos.SallesRDCRepository;
 import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,28 +18,22 @@ import java.util.stream.Collectors;
  */
 @Service
 public class FacadeImpl implements Facade {
-
     @Autowired
-    private SalleRepository salles;
-
-
+    private SallesRDCRepository sallesRDCRepository;
+    @Autowired
+    private SallesEtageRepository sallesEtageRepository;
 
     @Override
-    public Salle updateRoom(long idRoom, UserModifiedRoom userModifyRoom) throws NotSuchRoomException {
-
-        var optRoom = salles.findById(idRoom);
-        Salle s = optRoom.orElseThrow(NotSuchRoomException::new);
-
-        if (userModifyRoom.getType() != null)
-            s.setType(userModifyRoom.getType());
-
-        if (userModifyRoom.getFonction() != null)
-            s.setFonction(userModifyRoom.getFonction());
-
-
-        s = salles.save(s);
-        return s;
-
+    public Salle updateRoom(int idRoom, UserModifiedRoom userModifyRoom) throws NotSuchRoomException {
+        sallesRDCRepository.findById(idRoom)
+            .ifPresentOrElse(salleRDC -> {
+                salleRDC.setFonction(userModifyRoom.getFonction());
+                salleRDC.setCategorie(userModifyRoom.getType());
+            }, () -> {
+                var salleEtage = sallesEtageRepository.findById(idRoom).orElseThrow(NotSuchRoomException::new);
+                salleEtage.setFonction(userModifyRoom.getFonction());
+                salleEtage.setCategorie(userModifyRoom.getType());
+            });
     }
 
 
