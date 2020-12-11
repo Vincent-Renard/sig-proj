@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,14 +35,14 @@ public class FacadeImpl implements Facade {
         var optSalleRDC = sallesRDCRepository.findById(idRoom);
         if (optSalleRDC.isPresent()) {
             var salleRDC = optSalleRDC.get();
-            salleRDC.setFonction(userModifyRoom.getFonction());
-            salleRDC.setCategorie(userModifyRoom.getCategorie());
-            salle = getSalleFromSalleRDC(salleRDC);
+            Optional.ofNullable(userModifyRoom.getFonction()).ifPresent(fonction -> salleRDC.setFonction(fonction));
+            Optional.ofNullable(userModifyRoom.getCategorie()).ifPresent(categorie -> salleRDC.setCategorie(categorie));
+            salle = getSalleFromSalleRDC(sallesRDCRepository.save(salleRDC));
         } else {
             var salleEtage = sallesEtageRepository.findById(idRoom).orElseThrow(NotSuchRoomException::new);
-            salleEtage.setFonction(userModifyRoom.getFonction());
-            salleEtage.setCategorie(userModifyRoom.getCategorie());
-            salle = getSalleFromSalleEtage(salleEtage);
+            Optional.ofNullable(userModifyRoom.getFonction()).ifPresent(fonction -> salleEtage.setFonction(fonction));
+            Optional.ofNullable(userModifyRoom.getCategorie()).ifPresent(categorie -> salleEtage.setCategorie(categorie));
+            salle = getSalleFromSalleEtage(sallesEtageRepository.save(salleEtage));
         }
 
         return salle;
