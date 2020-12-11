@@ -16,6 +16,8 @@
 	<description>sig project with Spring Boot</description>
 
 	<properties>
+		<maven.compiler.target>14</maven.compiler.target>
+		<maven.compiler.source>14</maven.compiler.source>
 		<java.version>14</java.version>
 	</properties>
 

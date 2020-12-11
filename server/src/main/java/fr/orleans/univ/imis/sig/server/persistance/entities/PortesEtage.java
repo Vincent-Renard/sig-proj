@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @ToString
-@Table(name = "portes-etage")
+@Table(name = "\"portes-etage\"")
 public class PortesEtage {
     @Id
     int id;
