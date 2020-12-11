@@ -1,0 +1,170 @@
+GET localhost:8081/sig/rooms
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+#    TP, TD, LABO, TOILETTES, ESCALIER, COULOIR, BUREAU
+GET localhost:8081/sig/rooms?type=TOILETTES
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=TP
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=TD
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=ESCALIER
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=LABO
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=COULOIR
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms?type=BUREAU
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+
+PATCH localhost:8081/sig/rooms?type=BUREAU
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+
+PATCH localhost:8081/sig/rooms/11
+Content-Type: application/json
+
+{
+  "categorie": "TOILETTES"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+client.assert(response.body.categorie==="TOILETTES","categorie non modifiée");
+});
+%}
+
+####
+PATCH localhost:8081/sig/rooms/8
+Content-Type: application/json
+
+{
+  "fonction": "ancien secretaria",
+  "categorie": "LABO"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+client.assert(response.body.categorie==="LABO","categorie non modifiée");
+client.assert(response.body.fonction==="ancien secretaria","fonction non modifiée");
+});
+%}
+
+####
+PATCH localhost:8081/sig/rooms/11
+Content-Type: application/json
+
+{
+  "categorie": "COULOIR",
+  "fonction": "Hall"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+client.assert(response.body.categorie==="COULOIR","categorie non modifiée");
+client.assert(response.body.fonction==="Hall","fonction non modifiée");
+});
+%}
+
+####
+PATCH localhost:8081/sig/rooms/8
+Content-Type: application/json
+
+{
+  "fonction": "Secretariat",
+  "categorie": "BUREAU"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+client.assert(response.body.categorie==="BUREAU","categorie non modifiée");
+client.assert(response.body.fonction==="Secretariat","fonction non modifiée");
+});
+%}
+
+####
+GET localhost:8081/sig/rooms
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+####
+
