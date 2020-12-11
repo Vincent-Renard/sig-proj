@@ -27,12 +27,12 @@ public class Controler {
 
 
     @GetMapping("/rooms")
-    public ResponseEntity<List<Salle>> getRoomsOfBat(@RequestParam(required = false, name = "type") Categorie typeOfRoom) {
+    public ResponseEntity<List<Salle>> getRooms(@RequestParam(required = false, name = "type") Categorie typeOfRoom) {
         return ResponseEntity.ok(base.getAllSalles(typeOfRoom));
     }
 
     @PatchMapping("rooms/{idRoom}")
-    public ResponseEntity<Salle> updateRoomOfBat(@PathVariable(name = "idRoom") int idroom, @RequestBody UserModifiedRoom userModifiedRoom) throws NotSuchRoomException {
+    public ResponseEntity<Salle> updateRoom(@PathVariable(name = "idRoom") int idroom, @RequestBody UserModifiedRoom userModifiedRoom) throws NotSuchRoomException {
         return ResponseEntity.ok(base.updateRoom(idroom, userModifiedRoom));
     }
 

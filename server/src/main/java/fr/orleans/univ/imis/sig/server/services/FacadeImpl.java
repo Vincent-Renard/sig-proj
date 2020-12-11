@@ -22,6 +22,7 @@ import fr.orleans.univ.imis.sig.server.services.exceptions.NotSuchRoomException;
  */
 @Service
 public class FacadeImpl implements Facade {
+
     @Autowired
     private SallesRDCRepository sallesRDCRepository;
     @Autowired
