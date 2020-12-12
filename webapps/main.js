@@ -204,113 +204,99 @@ function distancePortes(feature_porte1, feature_porte2) {
     );
 }
 
-// return a collection of triple for each etape of the route
-// [[porte_1,porte_2,0],[porte_1,porte_2,1],...]
+/**
+ * @param {number} porte_start Numéro de la porte de départ
+ * @param {number} porte_end Numéro de la porte d'arrivée
+ *
+ * @returns {[Object, Object, number][]} Une liste de triplets décrivant le chemin : [[porte_1, porte_2, etage], [porte_2, porte_3, etage], ...]
+ */
 function Route(porte_start, porte_end) {
-    var feature_porte_1;
-    var feature_porte_2;
+    // On récupère les objets porte depuis leur numéro
+    const feature_porte_start = get_porte(parseInt(porte_start));
+    const feature_porte_end = get_porte(parseInt(porte_end));
 
-    var find1 = false;
-    var find2 = false;
-    while (!find1 || !find2) {
-        collection_features_portes_rdc.forEach(function(element) {
-            if (element.get('numero') === parseInt(porte_start)) {
-                feature_porte_1 = element;
-                find1 = true;
+    // On initialise les chemins avec 2 chemins : chacun partant d'un côté de la porte de départ
+    // Ils commencent avec une distance de 0
+    let chemins = [
+        [[[feature_porte_start.get("salle1"), feature_porte_start]], 0],
+        [[[feature_porte_start.get("salle2"), feature_porte_start]], 0],
+    ];
+    // Tant qu'un chemin s'agrandit, on boucle
+    let updated = true;
+    while (updated) {
+        updated = false;
+        // Pour chaque chemin, on crée une liste de nouveaux chemins possibles (d'où le "flatMap" pour éviter les listes de listes)
+        chemins = chemins.flatMap(([chemin, distance]) => {
+            const [derniere_salle, derniere_porte] = chemin[chemin.length - 1];
+            // Si le chemin arrive déjà à la porte souhaitée, on l'ignore mais on le garde (il ne s'agrandit juste pas)
+            if (derniere_porte === feature_porte_end) {
+                return [[chemin, distance]];
             }
-            if (element.get('numero') === parseInt(porte_end)) {
-                feature_porte_2 = element;
-                find2 = true;
-            }
-        });
-        collection_features_portes_etage.forEach(function(element) {
-            if (element.get('numero') === parseInt(porte_start)) {
-                feature_porte_1 = element;
-                find1 = true;
-            }
-            if (element.get('numero') === parseInt(porte_end)) {
-                feature_porte_2 = element;
-                find2 = true;
-            }
+            // On trouve quelle est la prochaine salle à visiter parmi les deux côtés de la porte (c'est du coup celle qui n'est pas la dernière visitée)
+            const next_salle = [derniere_porte.get("salle1"), derniere_porte.get("salle2")].find(salle => salle !== derniere_salle);
+            // On récupère toutes les portes de la salle à visiter et on filtre les portes déjà traversées
+            // Si au moins une porte est récupérée, updated est mis à true car une nouvelle itération sera nécessaire
+            // Pour toutes les portes récupérées, on crée un chemin identique à l'actuel auquel :
+            // - on ajoute la nouvelle salle et la nouvelle porte traversées
+            // - on augmente la distance en ajoutant celle entres les deux dernières portes traversées
+            return find_portes(next_salle)
+                .filter(next_porte => chemin.every(([, porte]) => porte !== next_porte))
+                .map(next_porte => {
+                    updated = true;
+                    return [chemin.concat([[next_salle, next_porte]]), distance + distancePortes(derniere_porte, next_porte)];
+                });
         });
     }
 
-    // On parcours l'ensemble des possible porte à porte !
-    // On stock dans une variable l'ensemble des routes possible
-    // On ne passe pas deux fois par la même porte
-    const chemins = [
-        [
-            [feature_porte_1], 0
-        ]
-    ];
-    const bon_chemin = run(chemins, feature_porte_2);
+    // On récupère le chemin ayant la plus courte distance
+    const [plus_court_chemin, ] = chemins.reduce(
+        ([chemin_min, distance_min], [chemin, distance]) => {
+            return distance < distance_min
+                ? [chemin, distance]
+                : [chemin_min, distance_min];
+        },
+        [null, Infinity],
+    );
 
-    let res = [];
-    for (let i = 0; i < bon_chemin.length - 1; i++) {
-        const porte1 = bon_chemin[i];
-        const porte2 = bon_chemin[i + 1];
-
+    // On tranforme le format de notre chemin
+    // de [[salle_1, porte_1], [salle_2, porte_2], [salle_3, porte_3], ...]
+    // à [[porte_1, porte_2, etage], [porte_2, porte_3, etage], ...]
+    const res = [];
+    for (let i = 0; i < plus_court_chemin.length - 1; i++) {
+        const [, porte1] = plus_court_chemin[i];
+        const [, porte2] = plus_court_chemin[i + 1];
         res.push([porte1, porte2, porte1.get("etage")]);
     }
-
     return res;
 }
 
-function run(init, porte_recherchee) {
-    let chemins_precedents = init;
-    let end = false;
-
-    while (!end) {
-        const nouveaux_chemins = Array.from(chemins_precedents);
-        end = true;
-        console.log(chemins_precedents);
-        for (const [chemin, distance] of chemins_precedents) {
-            const avant_derniere_porte = chemin[chemin.length - 2];
-            const derniere_porte = chemin[chemin.length - 1];
-            if (derniere_porte === porte_recherchee) {
-                continue;
-            }
-            const salles = [derniere_porte.get("salle1"), derniere_porte.get("salle2")];
-            for (const salle of salles) {
-                if (avant_derniere_porte != null && [avant_derniere_porte.get("salle1"), avant_derniere_porte.get("salle2")].includes(salle)) {
-                    continue;
-                }
-                for (const porte of find_portes(salle)) {
-                    if (chemin.includes(porte)) {
-                        continue;
-                    }
-                    nouveaux_chemins.pop(chemin);
-                    nouveaux_chemins.push([chemin.concat([porte]), distance + distancePortes(derniere_porte, porte)]);
-                    end = false;
-                }
-            }
-        }
-        chemins_precedents = nouveaux_chemins;
-    }
-
-    let maximum = 0;
-    let res;
-    for (const [chemin, distance] of chemins_precedents) {
-        if (distance > maximum) {
-            maximum = distance;
-            res = chemin;
-        }
-    }
-    return res;
-}
-
+/**
+ * @param {number} num_porte Numéro de la porte
+ *
+ * @returns {Object} L'objet porte depuis son numéro
+ */
 function get_porte(num_porte) {
     return collection_features_portes_rdc
         .concat(collection_features_portes_etage)
         .find(features_porte => features_porte.get("numero") === num_porte);
 }
 
+/**
+ * @param {number} num_salle Numéro de la salle
+ *
+ * @returns {Object} L'objet salle depuis son numéro
+ */
 function get_salle(num_salle) {
     return collection_features_salles_rdc
         .concat(collection_features_salles_etage)
         .find(features_salle => parseInt(features_salle.getId().split('.')[1]) === num_salle);
 }
 
+/**
+ * @param {number} salle Numéro de la salle
+ *
+ * @returns {Object[]} La liste des objets porte d'une salle depuis son numéro
+ */
 function find_portes(salle) {
     const num_salle = parseInt(salle);
 
