@@ -170,8 +170,7 @@ function Navigate() {
     source_vector_draw_etage.clear();
     drawPinStart();
 
-    //var porte_start = porteStartLocalisation;
-    var porte_start = "6";
+    var porte_start = porteStartLocalisation;
     var porte_end = document.getElementById("endNavigation").value;
 
     var collection_route = Route(porte_start, porte_end);
@@ -371,7 +370,7 @@ function addPinOnMapStart() {
 }
 
 function drawPinStart() {
-    //addPinOnMapStart();
+    addPinOnMapStart();
 }
 
 function centrer(numero_porte) {
